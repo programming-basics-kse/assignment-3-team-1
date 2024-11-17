@@ -46,6 +46,35 @@ def getMedals(header, otherRows, countryName, year):
 
     return outputData
 
+def getOverall(header, otherRows, countries, year):
+    outputData = []
+
+    yearIdx = header.index('Year')
+    teamIdx = header.index('Team')
+    medalIdx = header.index('Medal')
+
+    for row in otherRows:
+        currMedal = row[medalIdx]
+        if currMedal == DEFAULT_NULL:
+            continue
+
+        currTeam = row[teamIdx]
+        currYear = row[yearIdx]
+
+
+        if currTeam in countries:
+            key = currYear
+            if currTeam not in dictionary:
+                dictionary[currTeam] = {}
+                dictionary[currTeam][key] = 1
+            else:
+                if key not in dictionary[currTeam]:
+                    dictionary[currTeam][key] = 1
+                    continue
+                dictionary[currTeam][key] += 1
+
+    return outputData
+
 def getTotal(header, otherRows, year):
     outputData = []
 
@@ -77,26 +106,42 @@ def getTotal(header, otherRows, year):
 
     return outputData
 
-def start(filePath, countryName, year, outputPath, totalByYear):
-    outputData = []
-    isTotalMode = totalByYear is not None
+def start(filePath, countryName, year, outputPath, totalByYear, overallByCountries):
+    mode = ""
+
+    if totalByYear is not None:
+        mode = "total"
+    elif overallByCountries is not None:
+        mode = "overall"
+    else:
+        mode = "medals"
 
     with open(filePath) as file:
         reader = csv.reader(file, delimiter='\t', quotechar='"')
         allData = list(reader)
         header = allData[0]
-        headerToString = joinBy("\t", header)
         otherRows = allData[1:]
 
-        if isTotalMode:
+        if mode == "total":
             outputData = getTotal(header,otherRows,totalByYear)
-        else:
+        elif mode == "medals":
             outputData = getMedals(header, otherRows, countryName, year)
+        else:
+            outputData = getOverall(header, otherRows, overallByCountries, year)
 
     result = ""
-    if not isTotalMode:
+    if mode == "medals":
         result += joinBy("\n", outputData[:10]) + "\n"
         result += f"Gold - {dictionary[countryName][GOLD_MEDAL_NAME]} Silver - {dictionary[countryName][SILVER_MEDAL_NAME]} Bronze - {dictionary[countryName][BRONZE_MEDAL_NAME]} \n"
+    elif mode == "overall":
+        for country in overallByCountries:
+            max_v = -float('inf')
+            max_k = ""
+            for k,v in dictionary[country].items():
+                if v > max_v:
+                    max_k = k
+                    max_v = v
+            result += country + " " + max_k + " " + str(max_v) + "\n"
     else:
         result += joinBy("\n", outputData) + "\n"
         result += f"Total: {len(outputData)}"
@@ -115,7 +160,8 @@ parser.add_argument('year', nargs="?")
 parser.add_argument('-medals', nargs="?")
 parser.add_argument('-output', nargs="?")
 parser.add_argument('-total', nargs="?")
+parser.add_argument('-overall', nargs="+")
 
 args = parser.parse_args()
 
-start(args.filename, args.medals, args.year, args.output, args.total)
+start(args.filename, args.medals, args.year, args.output, args.total, args.overall)
