@@ -5,6 +5,7 @@ dictionary = {}
 
 DEFAULT_NULL = 'NA'
 
+
 def joinBy(separator, arr):
     return separator.join(str(x) for x in arr)
 
@@ -26,6 +27,8 @@ def start(filePath, countryName, year, outputPath):
 
         for el in otherRows:
             currMedal = el[medalIdx]
+            if currMedal == DEFAULT_NULL:
+                continue
             currTeam = el[teamIdx]
             currYear = el[yearIdx]
             currCountry = el[countryIdx]
@@ -46,11 +49,14 @@ def start(filePath, countryName, year, outputPath):
                 dictionary[currYear][currTeam] = [dataToAppend]
 
     res = headerToString + "\n"
-    res += joinBy("\n", outputData[:10])
+    res += joinBy("\n", outputData[:10]) + "\n"
+    res += f"Total: {len(outputData)}"
 
     if outputPath:
         with open(outputPath, mode="w") as outputFile:
             outputFile.write(res)
+    else:
+        print(res)
 
 
 parser = argparse.ArgumentParser(prog='Medals')
