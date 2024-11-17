@@ -22,15 +22,17 @@ def start(filePath, countryName, year, outputPath):
         yearIdx = header.index('Year')
         teamIdx = header.index('Team')
         medalIdx = header.index('Medal')
+        countryIdx = header.index('NOC')
 
         for el in otherRows:
             currMedal = el[medalIdx]
             currTeam = el[teamIdx]
             currYear = el[yearIdx]
+            currCountry = el[countryIdx]
 
             dataToAppend = el
 
-            if countryName in currTeam and currYear == year:
+            if (countryName in currTeam or countryName in currCountry) and currYear == year:
                 outputData.append(joinBy(",", el))
 
             if currYear in dictionary:
