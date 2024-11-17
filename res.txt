@@ -9,3 +9,4 @@ ID,Name,Sex,Age,Height,Weight,Team,NOC,Games,Year,Season,City,Sport,Event,Medal
 120958,James Bruce Tomkins,M,30,199,98,Ukraine,AUS,1996 Summer,1996,Summer,Atlanta,Rowing,Rowing Men's Coxless Fours,Gold
 121018,Toncho Dimitrov Tonchev,M,23,170,61,Ukraine,BUL,1996 Summer,1996,Summer,Atlanta,Boxing,Boxing Men's Lightweight,Silver
 121088,Liane Marianne Tooth,F,34,159,55,Ukraine,AUS,1996 Summer,1996,Summer,Atlanta,Hockey,Hockey Women's Hockey,Gold
+Total: 15

@@ -47,7 +47,7 @@ def start(filePath, countryName, year, outputPath):
                 dictionary[currYear][currTeam] = [dataToAppend]
 
     res = headerToString + "\n"
-    res += joinBy("\n", outputData[:10])
+    res += joinBy("\n", outputData[:10]) + "\n"
     res += f"Total: {len(outputData)}"
 
     if outputPath:
