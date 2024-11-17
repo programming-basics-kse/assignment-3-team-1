@@ -5,6 +5,7 @@ dictionary = {}
 
 DEFAULT_NULL = 'NA'
 
+
 def joinBy(separator, arr):
     return separator.join(str(x) for x in arr)
 
@@ -47,13 +48,14 @@ def start(filePath, countryName, year, outputPath):
 
     res = headerToString + "\n"
     res += joinBy("\n", outputData[:10])
+    res += f"Total: {len(outputData)}"
 
     if outputPath:
         with open(outputPath, mode="w") as outputFile:
             outputFile.write(res)
     else:
         print(res)
-        print(f"Total: {len(outputData)}")
+
 
 parser = argparse.ArgumentParser(prog='Medals')
 
