@@ -25,6 +25,8 @@ def start(filePath, countryName, year, outputPath):
 
         for el in otherRows:
             currMedal = el[medalIdx]
+            if currMedal == DEFAULT_NULL:
+                continue
             currTeam = el[teamIdx]
             currYear = el[yearIdx]
 
@@ -49,7 +51,9 @@ def start(filePath, countryName, year, outputPath):
     if outputPath:
         with open(outputPath, mode="w") as outputFile:
             outputFile.write(res)
-
+    else:
+        print(res)
+        print(f"Total: {len(outputData)}")
 
 parser = argparse.ArgumentParser(prog='Medals')
 
