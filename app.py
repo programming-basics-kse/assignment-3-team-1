@@ -12,6 +12,29 @@ SILVER_MEDAL_NAME = 'Silver'
 def joinBy(separator, arr):
     return separator.join(str(x) for x in arr)
 
+
+def findMinOrMax(type, countryName):
+    events = dictionary[countryName]["events"]
+    value = 0
+    key = ""
+
+    if type == "min":
+        value = float('inf')
+
+    for k, v in dictionary[countryName].items():
+        if k in events:
+            if type == "max":
+                if v > value:
+                    key = k
+                    value = v
+            else:
+                if v < value:
+                    key = k
+                    value = v
+
+    return (key, value)
+
+
 def getMedals(header, otherRows, countryName, year):
     outputData = []
 
@@ -46,6 +69,7 @@ def getMedals(header, otherRows, countryName, year):
 
     return outputData
 
+
 def getOverall(header, otherRows, countries, year):
     outputData = []
 
@@ -61,7 +85,6 @@ def getOverall(header, otherRows, countries, year):
         currTeam = row[teamIdx]
         currYear = row[yearIdx]
 
-
         if currTeam in countries:
             key = currYear
             if currTeam not in dictionary:
@@ -74,6 +97,7 @@ def getOverall(header, otherRows, countries, year):
                 dictionary[currTeam][key] += 1
 
     return outputData
+
 
 def getTotal(header, otherRows, year):
     outputData = []
@@ -100,16 +124,77 @@ def getTotal(header, otherRows, year):
         else:
             dictionary[currTeam][currMedal] += 1
 
-    for k,v in dictionary.items():
+    for k, v in dictionary.items():
         medals = f"{k} - {v[GOLD_MEDAL_NAME]} - {v[SILVER_MEDAL_NAME]} - {v[BRONZE_MEDAL_NAME]}"
         outputData.append(medals)
 
     return outputData
 
-def start(filePath, countryName, year, outputPath, totalByYear, overallByCountries):
+
+def startInteractiveMode(header, otherRows):
+    while True:
+        try:
+            countryName = input("Enter a country name or country code: ")
+            if countryName == "q":
+                break
+
+            yearIdx = header.index('Year')
+            teamIdx = header.index('Team')
+            medalIdx = header.index('Medal')
+            countryCodeIdx = header.index('NOC')
+
+            for el in otherRows:
+                currMedal = el[medalIdx]
+                if currMedal == DEFAULT_NULL:
+                    continue
+                currTeam = el[teamIdx]
+                currYear = el[yearIdx]
+                currCountryCode = el[countryCodeIdx]
+
+                if currCountryCode not in countryName and currTeam not in countryName:
+                    continue
+
+                if countryName not in dictionary:
+                    dictionary[countryName] = {}
+                    dictionary[countryName]["events"] = {currYear}
+                    dictionary[countryName]["year"] = int(currYear)
+
+                    dictionary[countryName][currYear] = 1
+
+                    dictionary[countryName][BRONZE_MEDAL_NAME] = 0
+                    dictionary[countryName][GOLD_MEDAL_NAME] = 0
+                    dictionary[countryName][SILVER_MEDAL_NAME] = 0
+                    dictionary[countryName][currMedal] = 1
+                else:
+                    if currYear not in dictionary[countryName]:
+                        dictionary[countryName][currYear] = 1
+                    else:
+                        dictionary[countryName][currYear] += 1
+
+                    dictionary[countryName]["events"].add(currYear)
+                    dictionary[countryName]["year"] = min(int(currYear), dictionary[countryName]["year"])
+                    dictionary[countryName][currMedal] += 1
+
+            country = dictionary[countryName]
+            allEventsCountry = len(country["events"])
+            avgNumOfMedals = f"Avg: {round(country[GOLD_MEDAL_NAME] / allEventsCountry)} Gold {round(country[SILVER_MEDAL_NAME] / allEventsCountry)} Silver {round(country[BRONZE_MEDAL_NAME] / allEventsCountry)} Bronze"
+            mostNumOfMedals = findMinOrMax("max", countryName)
+            leastNumOfMedals = findMinOrMax("min", countryName)
+
+            print(avgNumOfMedals)
+            print(f"Most num of medals {mostNumOfMedals[1]} in {mostNumOfMedals[0]}")
+            print(f"Least num of medals {leastNumOfMedals[1]} in {leastNumOfMedals[0]}")
+        except:
+            print("Country not exist")
+            continue
+
+
+def start(filePath, countryName, year, outputPath, totalByYear, overallByCountries, interactiveMode):
     mode = ""
 
-    if totalByYear is not None:
+    if interactiveMode:
+        mode = "interactive"
+    elif totalByYear is not None:
         mode = "total"
     elif overallByCountries is not None:
         mode = "overall"
@@ -122,8 +207,11 @@ def start(filePath, countryName, year, outputPath, totalByYear, overallByCountri
         header = allData[0]
         otherRows = allData[1:]
 
-        if mode == "total":
-            outputData = getTotal(header,otherRows,totalByYear)
+        if mode == "interactive":
+            startInteractiveMode(header, otherRows)
+            exit()
+        elif mode == "total":
+            outputData = getTotal(header, otherRows, totalByYear)
         elif mode == "medals":
             outputData = getMedals(header, otherRows, countryName, year)
         else:
@@ -137,7 +225,7 @@ def start(filePath, countryName, year, outputPath, totalByYear, overallByCountri
         for country in overallByCountries:
             max_v = -float('inf')
             max_k = ""
-            for k,v in dictionary[country].items():
+            for k, v in dictionary[country].items():
                 if v > max_v:
                     max_k = k
                     max_v = v
@@ -161,7 +249,8 @@ parser.add_argument('-medals', nargs="?")
 parser.add_argument('-output', nargs="?")
 parser.add_argument('-total', nargs="?")
 parser.add_argument('-overall', nargs="+")
+parser.add_argument('-interactive', action="store_true")
 
 args = parser.parse_args()
 
-start(args.filename, args.medals, args.year, args.output, args.total, args.overall)
+start(args.filename, args.medals, args.year, args.output, args.total, args.overall, args.interactive)
