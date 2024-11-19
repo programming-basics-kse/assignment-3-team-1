@@ -189,8 +189,10 @@ def startInteractiveMode(header, otherRows):
             continue
 
 
-def start(filePath, countryName, year, outputPath, totalByYear, overallByCountries, interactiveMode):
+def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, interactiveMode):
     mode = ""
+    countryName = ""
+    year = ""
 
     if interactiveMode:
         mode = "interactive"
@@ -199,6 +201,8 @@ def start(filePath, countryName, year, outputPath, totalByYear, overallByCountri
     elif overallByCountries is not None:
         mode = "overall"
     else:
+        countryName = medalArgs[0]
+        year = medalArgs[1]
         mode = "medals"
 
     with open(filePath) as file:
@@ -244,13 +248,12 @@ def start(filePath, countryName, year, outputPath, totalByYear, overallByCountri
 parser = argparse.ArgumentParser(prog='Medals')
 
 parser.add_argument('filename')
-parser.add_argument('year', nargs="?")
-parser.add_argument('-medals', nargs="?")
-parser.add_argument('-output', nargs="?")
-parser.add_argument('-total', nargs="?")
+parser.add_argument('-medals', nargs="+")
+parser.add_argument('-output')
+parser.add_argument('-total')
 parser.add_argument('-overall', nargs="+")
 parser.add_argument('-interactive', action="store_true")
 
 args = parser.parse_args()
 
-start(args.filename, args.medals, args.year, args.output, args.total, args.overall, args.interactive)
+start(args.filename, args.medals, args.output, args.total, args.overall, args.interactive)
