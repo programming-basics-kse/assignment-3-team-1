@@ -9,6 +9,17 @@ BRONZE_MEDAL_NAME = 'Bronze'
 SILVER_MEDAL_NAME = 'Silver'
 
 
+def getAgeCategory(age):
+    if 18 <= age <= 25:
+        return '1'
+    elif 25 < age <= 35:
+        return '2'
+    elif 35 < age <= 50:
+        return '3'
+    else:
+        return '4'
+
+
 def joinBy(separator, arr):
     return separator.join(str(x) for x in arr)
 
@@ -95,6 +106,60 @@ def getOverall(header, otherRows, countries, year):
                     dictionary[currTeam][key] = 1
                     continue
                 dictionary[currTeam][key] += 1
+
+    return outputData
+
+
+def getTop(header, otherRows, top):
+    outputData = []
+
+    is_filter_by_gender = 'F' in top or 'M' in top
+    is_filer_by_age = False
+
+    for i in range(1, 5):
+        if str(i) in top:
+            is_filer_by_age = True
+            break
+
+    genderIdx = header.index('Sex')
+    nameIdx = header.index('Name')
+    ageIdx = header.index('Age')
+    medalIdx = header.index('Medal')
+
+    max_medals = 0
+    max_medals_leader = ""
+
+    for el in otherRows:
+        currMedal = el[medalIdx]
+        if currMedal == DEFAULT_NULL:
+            continue
+        currGender = el[genderIdx]
+        currAge = el[ageIdx]
+        currName = el[nameIdx]
+        if currAge == DEFAULT_NULL:
+            continue
+        ageCategory = getAgeCategory(int(currAge))
+
+        if is_filter_by_gender and currGender not in top:
+            continue
+
+        if is_filer_by_age and ageCategory not in top:
+            continue
+
+        if currName not in dictionary:
+            dictionary[currName] = 1
+        else:
+            dictionary[currName] += 1
+            num_of_medals = dictionary[currName]
+
+            if num_of_medals > max_medals:
+                max_medals = num_of_medals
+                max_medals_leader = el
+
+    leader_name = max_medals_leader[nameIdx]
+    leader_age = max_medals_leader[ageIdx]
+
+    outputData.append(f"Leader is {leader_name} who is {leader_age} y.o. with {max_medals} medals")
 
     return outputData
 
@@ -189,13 +254,15 @@ def startInteractiveMode(header, otherRows):
             continue
 
 
-def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, interactiveMode):
+def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, top, interactiveMode):
     mode = ""
     countryName = ""
     year = ""
 
     if interactiveMode:
         mode = "interactive"
+    elif top:
+        mode = "top"
     elif totalByYear is not None:
         mode = "total"
     elif overallByCountries is not None:
@@ -214,6 +281,8 @@ def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, inte
         if mode == "interactive":
             startInteractiveMode(header, otherRows)
             exit()
+        elif mode == "top":
+            outputData = getTop(header, otherRows, top)
         elif mode == "total":
             outputData = getTotal(header, otherRows, totalByYear)
         elif mode == "medals":
@@ -234,6 +303,8 @@ def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, inte
                     max_k = k
                     max_v = v
             result += country + " " + max_k + " " + str(max_v) + "\n"
+    elif mode == "top":
+        result += joinBy("\n", outputData)
     else:
         result += joinBy("\n", outputData) + "\n"
         result += f"Total: {len(outputData)}"
@@ -251,9 +322,10 @@ parser.add_argument('filename')
 parser.add_argument('-medals', nargs="+")
 parser.add_argument('-output')
 parser.add_argument('-total')
+parser.add_argument('-top', nargs="+")
 parser.add_argument('-overall', nargs="+")
 parser.add_argument('-interactive', action="store_true")
 
 args = parser.parse_args()
 
-start(args.filename, args.medals, args.output, args.total, args.overall, args.interactive)
+start(args.filename, args.medals, args.output, args.total, args.overall, args.top, args.interactive)
