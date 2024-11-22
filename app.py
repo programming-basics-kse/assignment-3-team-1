@@ -244,7 +244,7 @@ def start(filePath, countryName, year, outputPath, totalByYear, overallByCountri
 parser = argparse.ArgumentParser(prog='Medals')
 
 parser.add_argument('filename')
-parser.add_argument('year', nargs="?")
+parser.add_argument('year', nargs='*')
 parser.add_argument('-medals', nargs="?")
 parser.add_argument('-output', nargs="?")
 parser.add_argument('-total', nargs="?")
