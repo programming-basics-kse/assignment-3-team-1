@@ -1,5 +1,5 @@
 from nonSpecific import *
-class defaultMode:
+class medalsMode:
 
     def __init__(self, header, otherRows, countryName, year, dictionary):
         self.header = header

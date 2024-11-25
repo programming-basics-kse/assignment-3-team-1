@@ -27,7 +27,7 @@ class interactiveMode:
                     currYear = el[yearIdx]
                     currCountryCode = el[countryCodeIdx]
 
-                    if currCountryCode not in countryName and currTeam not in countryName:
+                    if countryName not in currCountryCode and countryName not in currTeam:
                         continue
 
                     if countryName not in self.dictionary:
@@ -53,13 +53,16 @@ class interactiveMode:
 
                 country = self.dictionary[countryName]
                 allEventsCountry = len(country["events"])
+                firstOlympiad = self.dictionary[countryName]["year"]
                 avgNumOfMedals = f"Avg: {round(country[GOLD_MEDAL_NAME] / allEventsCountry)} Gold {round(country[SILVER_MEDAL_NAME] / allEventsCountry)} Silver {round(country[BRONZE_MEDAL_NAME] / allEventsCountry)} Bronze"
-                mostNumOfMedals = findMinOrMax("max", countryName)
-                leastNumOfMedals = findMinOrMax("min", countryName)
+                mostNumOfMedals = findMinOrMax("max", countryName, self.dictionary)
+                leastNumOfMedals = findMinOrMax("min", countryName, self.dictionary)
 
+                print(f"First olympiad was in {firstOlympiad}")
                 print(avgNumOfMedals)
                 print(f"Most num of medals {mostNumOfMedals[1]} in {mostNumOfMedals[0]}")
                 print(f"Least num of medals {leastNumOfMedals[1]} in {leastNumOfMedals[0]}")
+                print(self.dictionary[countryName])
             except:
                 print("Country not exist")
                 continue

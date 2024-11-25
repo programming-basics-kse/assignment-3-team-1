@@ -2,13 +2,13 @@ import argparse
 import csv
 from nonSpecific import *
 from interactiveMode import *
-from defaultMode import *
+from medalsMode import *
 from topMode import *
 from totalMode import *
 from overallMode import *
 
 dictionary = {}
-def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, top, interactiveMode):
+def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, top, interactiveM):
     result = ""
 
     with open(filePath) as file:
@@ -17,18 +17,18 @@ def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, top,
         header = allData[0]
         otherRows = allData[1:]
 
-        if interactiveMode:
+        if interactiveM:
             interactive = interactiveMode(header, otherRows, dictionary)
             interactive.startInteractiveMode()
             exit()
 
-        elif top:
+        elif top is not None:
             top = getTopMode(header, otherRows, top, dictionary)
             outputData = top.getTop()
             result += joinBy("\n", outputData)
 
         elif totalByYear is not None:
-            total = getTotalMode(header, otherRows, totalByYear, dictionary)
+            total = getTotalMode(dictionary, header, otherRows, totalByYear)
             outputData = total.getTotal()
             result += joinBy("\n", outputData) + "\n"
             result += f"Total: {len(outputData)}"
@@ -48,7 +48,7 @@ def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, top,
         else:
             countryName = medalArgs[0]
             year = medalArgs[1]
-            medals = defaultMode(header, otherRows, countryName, year, dictionary)
+            medals = medalsMode(header, otherRows, countryName, year, dictionary)
             outputData = medals.getMedals()
             result += joinBy("\n", outputData[:10]) + "\n"
             try:
