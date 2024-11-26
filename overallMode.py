@@ -10,7 +10,6 @@ class getOverallMode:
         self.result = ''
 
     def getOverall(self):
-        outputData = []
 
         yearIdx = self.header.index('Year')
         teamIdx = self.header.index('Team')
@@ -20,33 +19,39 @@ class getOverallMode:
         for row in self.otherRows:
             currMedal = row[medalIdx]
             currCountry = row[country_codeIdx]
-            keyCountry = row[teamIdx]
+            currTeam = row[teamIdx]
             currYear = row[yearIdx]
             if currMedal == DEFAULT_NULL:
                 continue
 
-            if keyCountry in self.countries or currCountry in self.countries:
-                keyYear = currYear
-                keyCountry = currCountry if currCountry in self.countries else keyCountry
-
-                if keyCountry not in self.dictionary:
-                    self.dictionary[keyCountry] = {}
-                    self.dictionary[keyCountry][keyYear] = 1
+            if currTeam in self.countries:
+                key = currYear
+                if currTeam not in self.dictionary:
+                    self.dictionary[currTeam] = {}
+                    self.dictionary[currTeam][key] = 1
                 else:
-                    if keyYear not in self.dictionary[keyCountry]:
-                        self.dictionary[keyCountry][keyYear] = 1
+                    if key not in self.dictionary[currTeam]:
+                        self.dictionary[currTeam][key] = 1
                     else:
-                        self.dictionary[keyCountry][keyYear] += 1
+                        self.dictionary[currTeam][key] += 1
 
-        for country in self.countries:
+            elif currCountry in self.countries:
+                key = currYear
+                if currCountry not in self.dictionary:
+                    self.dictionary[currCountry] = {}
+                    self.dictionary[currCountry][key] = 1
+                else:
+                    if key not in self.dictionary[currCountry]:
+                        self.dictionary[currCountry][key] = 1
+                    else:
+                        self.dictionary[currCountry][key] += 1
+        for country in self.dictionary:
             maxMedals = -float('inf')
             year = ""
-            try:
-                for years, medals in self.dictionary[country].items():
-                    if medals > maxMedals:
-                        year = years
-                        maxMedals = medals
-                self.result += country + " " + year + " " + str(maxMedals) + "\n"
-            except KeyError:
-                self.result += country + " no medals" + "\n"
+            for y, medals in self.dictionary[country].items():
+                if medals > maxMedals:
+                    year = y
+                    maxMedals = medals
+            self.result += country + " " + year + " " + str(maxMedals) + "\n"
+
         return self.result
