@@ -62,7 +62,6 @@ class interactiveMode:
                 print(avgNumOfMedals)
                 print(f"Most num of medals {mostNumOfMedals[1]} in {mostNumOfMedals[0]}")
                 print(f"Least num of medals {leastNumOfMedals[1]} in {leastNumOfMedals[0]}")
-                print(self.dictionary[countryName])
             except:
                 print("Country not exist")
                 continue
