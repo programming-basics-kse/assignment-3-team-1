@@ -24,17 +24,18 @@ class getOverallMode:
             if currMedal == DEFAULT_NULL:
                 continue
 
-            if currTeam in self.countries:
+            if currTeam in self.countries or currCountry in self.countries:
                 key = currYear
-                if currTeam not in self.dictionary:
-                    self.dictionary[currTeam] = {}
-                    self.dictionary[currTeam][key] = 1
-                else:
-                    if key not in self.dictionary[currTeam]:
-                        self.dictionary[currTeam][key] = 1
-                    else:
-                        self.dictionary[currTeam][key] += 1
+                countryKey = currTeam if currTeam in self.countries else currCountry
 
+                if countryKey not in self.dictionary:
+                    self.dictionary[countryKey] = {}
+                    self.dictionary[countryKey][key] = 1
+                else:
+                    if key not in self.dictionary[countryKey]:
+                        self.dictionary[countryKey][key] = 1
+                    else:
+                        self.dictionary[countryKey][key] += 1
             elif currCountry in self.countries:
                 key = currYear
                 if currCountry not in self.dictionary:
@@ -53,5 +54,4 @@ class getOverallMode:
                     year = y
                     maxMedals = medals
             self.result += country + " " + year + " " + str(maxMedals) + "\n"
-
         return self.result
