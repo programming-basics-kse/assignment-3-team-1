@@ -34,15 +34,7 @@ def start(filePath, medalArgs, outputPath, totalByYear, overallByCountries, top,
 
         elif overallByCountries is not None:
             overall = getOverallMode(dictionary, header, otherRows, overallByCountries)
-            outputData = overall.getOverall()
-            for country in overallByCountries:
-                max_v = -float('inf')
-                max_k = ""
-                for k, v in dictionary[country].items():
-                    if v > max_v:
-                        max_k = k
-                        max_v = v
-                result += country + " " + max_k + " " + str(max_v) + "\n"
+            result = overall.getOverall()
 
         else:
             countryName = medalArgs[0]

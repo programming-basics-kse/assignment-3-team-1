@@ -17,11 +17,9 @@ class getTotalMode:
 
         for el in self.otherRows:
             currMedal = el[medalIdx]
-            if currMedal == DEFAULT_NULL:
-                continue
             currTeam = el[teamIdx]
             currYear = el[yearIdx]
-            if currYear != self.year:
+            if currMedal == DEFAULT_NULL or currYear != self.year:
                 continue
 
             if currTeam not in self.dictionary:
