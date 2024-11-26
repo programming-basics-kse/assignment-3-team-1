@@ -36,22 +36,3 @@ class getOverallMode:
                         self.dictionary[countryKey][key] = 1
                     else:
                         self.dictionary[countryKey][key] += 1
-            elif currCountry in self.countries:
-                key = currYear
-                if currCountry not in self.dictionary:
-                    self.dictionary[currCountry] = {}
-                    self.dictionary[currCountry][key] = 1
-                else:
-                    if key not in self.dictionary[currCountry]:
-                        self.dictionary[currCountry][key] = 1
-                    else:
-                        self.dictionary[currCountry][key] += 1
-        for country in self.dictionary:
-            maxMedals = -float('inf')
-            year = ""
-            for y, medals in self.dictionary[country].items():
-                if medals > maxMedals:
-                    year = y
-                    maxMedals = medals
-            self.result += country + " " + year + " " + str(maxMedals) + "\n"
-        return self.result
