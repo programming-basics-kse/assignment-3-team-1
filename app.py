@@ -1,6 +1,5 @@
 import argparse
 import csv
-from nonSpecific import *
 from interactiveMode import *
 from medalsMode import *
 from topMode import *
